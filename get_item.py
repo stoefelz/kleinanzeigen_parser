@@ -2,17 +2,20 @@ import requests
 import json
 from bs4 import BeautifulSoup
 
-# returns the value of the first index in list, if not empty
+#returns the value of the first index in list, if not empty
 #lstrip -> removes spaces and \n on left side of string
+#\u200b fucks up the interpretation of the strings
+
+#this function is never used
 def stringlist_return_value(string_list):
     if len(string_list) != 0:
-        return string_list[0].text.lstrip()
+        return string_list[0].text.lstrip().replace('\u200b', '')
     else:
         return ""
-
-def string_return_value(string_list):
-    if len(string_list) is not None:
-        return string_list.text.lstrip()
+#tODO original: if len(string) is not None: ; i changed it to: if string is not None:
+def string_return_value(string):
+    if string is not None:
+        return string.text.lstrip().replace('\u200b', '')
     else:
         return ""
             
@@ -22,37 +25,39 @@ def get_item(item_id):
     
     #check for empty item_id
     if item_id.strip() == "":
-        return json.dumps(list_with_data)
+    #TODO
+        return "JOJO"#json.dumps(list_with_data)
     
     url = "https://www.ebay-kleinanzeigen.de/s-anzeige/" + item_id
 	
 	#TODO anzeige ohne bild finden
-    
-	
-	#without headers ebay-kleinanzeigen blocks request TODO uncomment
-    #headers = { 'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:100.0) Gecko/20100101 Firefox/100.0' }
-    #html_site = requests.get(url, headers=headers)
-    #soup = BeautifulSoup(html_site.text, "lxml")
 
+    #without headers ebay-kleinanzeigen blocks request TODO uncomment
+    headers = { 'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:100.0) Gecko/20100101 Firefox/100.0' }
+    html_site = requests.get(url, headers=headers)
+    soup = BeautifulSoup(html_site.text, "lxml")
+    #return soup
 	
 	#TODO only for testing
-    with open("item.html") as fp:
-       soup = BeautifulSoup(fp, "lxml",)
+    #with open("item.html") as fp:
+    #   soup = BeautifulSoup(fp, "lxml",)
 	
 	
 	# in every article tag is one complete search entry
+	#TODO evtl find_all hier, weil mehrere
     one_article = soup.find('article')
             
     #check if page exists
     if one_article is None:
-        return json.dumps(list_with_data)        
+    #TODO
+        return "HOHJO"#json.dumps(list_with_data)        
             
     #following outside article
     #userinfo
     userinfo = soup.find("span", class_="iconlist-text")
     userinfo_list = []
     userinfo_list.append(string_return_value(userinfo.find("a")))
-    #evtl TODO: \n mit viel leerzeichen ist drinnen, aber evtl brauch ich es auch zum anzeigen
+    #evtl TODO: \n mit viel leerzeichen ist drinnen, aber evtl brauch ich es auch zum anzeigen und das <br> raus
     userinfo_list.append(string_return_value(userinfo.find("span", class_="text-body-regular")))
     list_with_data.append(userinfo_list)
     
@@ -126,4 +131,4 @@ def get_item(item_id):
     #return list in json format
     return json.dumps(list_with_data)
 
-print(get_item("a "))
+print(get_item("2152339446"))

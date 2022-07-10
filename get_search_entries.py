@@ -2,18 +2,23 @@ import requests
 import json
 from bs4 import BeautifulSoup
 
-# returns the value of the first index in list, if not empty
+# returns the value of the first index in list, if not empty; should only have 1 index, but it doesnt matter
 def check_if_empty_return(string_list):
     if len(string_list) != 0:
-        return string_list[0].text.lstrip()
+        #\u200b fucks up the interpretation of the strings
+        return string_list[0].text.lstrip().replace('\u200b', '')
     else:
         return ""
         
+            #TODO wenn 10stellige nummer -> dann sollte anzeige anngezeigt werden
+            #sollte wie ein onclick event auf liste sein
             
+    #TODO für fliter sollte sorting einfach in einen string umgewandelt werden, wo alle filter rein kommen, bsp: "/s/k0/reinland/kleidung"
+    #obwohl dann z.b. bei sorting zu beachten ist, dass "sortierung: blablabal" des is
 def get_search_entries(search_term, sorting = "neu", site = 1):
-    # list for return
-    list_with_data = []
+
     
+    #TODO mehrere filter implementieren
     category = "/k0"
     
     url = "https://www.ebay-kleinanzeigen.de/s/sortierung:" + sorting + "/seite:" + str(site) + "/" + search_term + category
@@ -22,16 +27,17 @@ def get_search_entries(search_term, sorting = "neu", site = 1):
     default_image_url = "https://www.stoefelz.com/frontend/media/profile.jpg"
 	
 	#without headers ebay-kleinanzeigen blocks request TODO uncomment
-    #headers = { 'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:100.0) Gecko/20100101 Firefox/100.0' }
-    #html_site = requests.get(url, headers=headers)
-    #soup = BeautifulSoup(html_site.text, "lxml")
+    headers = { 'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:100.0) Gecko/20100101 Firefox/100.0' }
+    html_site = requests.get(url, headers=headers)
+    soup = BeautifulSoup(html_site.text, "lxml")
 
 	
 	#TODO only for testing
-    with open("suche.html") as fp:
-       soup = BeautifulSoup(fp, "lxml",)
+    #with open("suche2.html") as fp:
+     #  soup = BeautifulSoup(fp, "lxml",)
 	
-
+    # list for return
+    list_with_data = []
 	
 	# in every article tag is one complete search entry
     articles = soup.find_all('article')
@@ -41,8 +47,10 @@ def get_search_entries(search_term, sorting = "neu", site = 1):
         article_list = []
         
         # get id from attribute
-        element_id = one_article['data-adid']
-        article_list.append(element_id)
+        if one_article['data-adid'] is not None:
+            article_list.append(one_article['data-adid'])
+        else:
+            article_list.append("")
         
         #get values from parsing correct class
         heading = one_article.find_all("a", class_="ellipsis")
@@ -87,4 +95,4 @@ def get_search_entries(search_term, sorting = "neu", site = 1):
     #return list in json format
     return json.dumps(list_with_data)
 
-print(get_search_entries("oneplus"))
+print(get_search_entries("bernd das bureck"))
