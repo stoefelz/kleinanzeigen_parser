@@ -7,7 +7,7 @@ needed Python3 libraries: requests, json, bs4
 
 there are two files: get_item (info for one specific item) and get_search_entries (search results 1 page from Ebay Kleinanzeigen)
 
-__Function: *get_item(item_id)*__
+## Function: *get_item(item_id)*
 
 item_id: id from ebay-kleinanzeigen object is needed  
 returns array with strings or arrays in following order:  
@@ -31,7 +31,7 @@ there could be only one empty string in in every array index -> error/not availa
 
 if error: returns empty json array  
 
-__Function: *get_search_entries(search_term, sorting = "neu", site = 1)*__
+## Function: *get_search_entries(search_term, sorting = "neu", site = 1)*
 
 search_term: your keywords, sorting: *neu* or *preis* possible  
 if *site* max limit is reached -> last max site is returned // TODO  
@@ -52,32 +52,3 @@ every item array has following order:
 there could be only one empty string in in every array index -> error/not available in html source code  
 
 if error: returns empty json array
-
-# TODO
-getCategories()  
-
-bugs: 
-
-bei suche: zuerst checken, ob übergebener json string inhalt hat, wenn leer -> keine suchergebnisse
-bei artikel seite: zuerst checken, ob übergebener json string inhalt hat, wenn leer -> keine objekt mit dieser id
-
-TODO
-mal schauen, was bei einer anzeige passiert, wo kein bild
-wenn irgendein absatz nicht vorhanden -> ausblenden
-
-BUGS: anscheinend in der plz zeile oder so in der suche html code zu sehen <!-- Libertywrapper .... -->
-
-description nich ganz sichtbar
-keine views sichtbar: anscheinend ohne javascript net möglich -> raushauen, scheinbar manchmal undefinied vies meldung
-user info, da müssen leerzeilen raus
-macnhe anzeigen kann man net öffnen
-in objektanzeige: zeilenumbrüche fehlen einfach
-nicht anzeigbar: evtl wenn  "Detalis" leer
-details und features: wenn zeilenumbruch weil überlänge, schaut auch scheiße aus
-
-
-idee:
-für bild weiter swipen irgendwie sichtbar machen
-bei suche bei langem drücken link zu browser item
-bei löschen klick in suchleiste: keyboard zeigen
-ladebildschirm auf jeder seite
