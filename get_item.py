@@ -2,105 +2,101 @@ import requests
 import json
 from bs4 import BeautifulSoup
 
-#returns the value of the first index in list, if not empty
-#lstrip -> removes spaces and \n on left side of string
-#\u200b fucks up the interpretation of the strings
+# returns the string, if not None
+# lstrip -> removes spaces and \n on left side of string
+# \u200b fucks up the interpretation of the strings
 
-#this function is never used
-def stringlist_return_value(string_list):
-    if len(string_list) != 0:
-        return string_list[0].text.lstrip().replace('\u200b', '')
-    else:
-        return ""
-#tODO original: if len(string) is not None: ; i changed it to: if string is not None:
 def string_return_value(string):
     if string is not None:
         return string.text.lstrip().replace('\u200b', '')
     else:
         return ""
-            
+        
+# return JSON array: [[username, userinfo], [big_pics, .. , big_pics], [small_pics, .., small_pics], heading, price, zip, date, views, [[detaillistright, detaillistleft], .., [detaillistright, detaillistleft]], [checktags, .. , checktags], text, link]          
+# if there is some error -> empty string or array is in array
+# if there is no such item -> empty JSON array
+
+# item_id is Anzeigen-ID of Ebay-Kleinanzeigen item
+
 def get_item(item_id):
     # list for return
     list_with_data = []
     
-    #check for empty item_id
-    if item_id.strip() == "":
-    #TODO
+    # check for empty item_id -> item_id must be a string
+    if str(item_id).strip() == "":
         return json.dumps("")
     
-    url = "https://www.ebay-kleinanzeigen.de/s-anzeige/" + item_id
+    url = "https://www.ebay-kleinanzeigen.de/s-anzeige/" + str(item_id)
 	
-	#TODO anzeige ohne bild finden
+	# TODO anzeige ohne bild finden
 
-    #without headers ebay-kleinanzeigen blocks request TODO uncomment
+    # without headers ebay-kleinanzeigen blocks request TODO uncomment
     headers = { 'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:100.0) Gecko/20100101 Firefox/100.0' }
     html_site = requests.get(url, headers=headers)
-    soup = BeautifulSoup(html_site.text, "lxml")
-    #return soup
+    # html.parser or lxml -> lxml needs pip3 module
+    soup = BeautifulSoup(html_site.text, "html.parser")
+    
 	
-	#TODO only for testing
+	#TODO only for offline testing -> code above must be commented
     #with open("item.html") as fp:
-    #   soup = BeautifulSoup(fp, "lxml",)
+    #   soup = BeautifulSoup(fp, "html.parser",)
 	
 	
 	# in every article tag is one complete search entry
-	#TODO evtl find_all hier, weil mehrere
     one_article = soup.find('article')
             
-    #check if page exists
+    # check if page exists
     if one_article is None:
-    #TODO
         return json.dumps("")        
             
-    #following outside article
-    #userinfo
+    # userinfo
     userinfo = soup.find("span", class_="iconlist-text")
     userinfo_list = []
     userinfo_list.append(string_return_value(userinfo.find("a")))
-    #evtl TODO: \n mit viel leerzeichen ist drinnen, aber evtl brauch ich es auch zum anzeigen und das <br> raus
+    # evtl TODO: \n mit viel leerzeichen ist drinnen, aber evtl brauch ich es auch zum anzeigen und das <br> raus
     userinfo_list.append(string_return_value(userinfo.find("span", class_="text-body-regular")))
     list_with_data.append(userinfo_list)
     
        
-    #big_pictures: find_all div(class::galleryimage-large--cover) -> in jedem eine img mit src list in div galleryimage-element
+    # big_pictures: find_all div(class::galleryimage-large--cover) -> in every tag img with src list in div galleryimage-element
     big_pictures = one_article.find_all("img", id="viewad-image")
     big_pictures_list = []
     for one_picture in big_pictures:
         big_pictures_list.append(one_picture['src'])
     list_with_data.append(big_pictures_list)
     
-    #small_pictures: find_all div (class::imagebox-thumbnail) -> in jedem img mit src
+    # small_pictures: find_all div (class::imagebox-thumbnail) -> in every img tag with src
     small_pictures = one_article.find_all("div", class_="imagebox-thumbnail")
     small_pictures_list = []
     for one_picture in small_pictures:
         small_pictures_list.append(one_picture.find("img")['src'])
     list_with_data.append(small_pictures_list)
     
-    #header: h1 with id: viewad-title -> content from h1
+    # header: h1 with id: viewad-title -> content from h1
     heading = one_article.find("h1", id="viewad-title")
-    #in h1 are unnecessary spans
+    # in h1 are unnecessary spans
     while heading.span is not None:
         heading.span.replace_with("")
     list_with_data.append(string_return_value(heading))
     
-    #price: h2 with class: boxedarticle--price: in h2 
+     #price: h2 with class: boxedarticle--price: in h2 
     price = one_article.find("h2", class_="boxedarticle--price")
     list_with_data.append(string_return_value(price))
         
-    #zip: span with id viewad-locality -> content of span
+    # zip: span with id viewad-locality -> content of span
     zip_code = one_article.find("span", id="viewad-locality")
     list_with_data.append(string_return_value(zip_code))
     
-    #date
+    # date
     date = one_article.find("div", id="viewad-extra-info").find("span")
     list_with_data.append(string_return_value(date))
     
-    #views 
+    # views 
     views = one_article.find("span", id="viewad-cntr-num")
     list_with_data.append(string_return_value(views))
     
-    #-> if li found, else ""
-    #detaillist: find_all li class: addetailslist--detail -> inhalt: von li und darin auch ein span mit inhalt 
+    # -> if li found, else ""
+    # detaillist: find_all li class: addetailslist--detail -> content from li and there is a span with content 
     detaillist = one_article.find_all("li", class_="addetailslist--detail")
     detaillist_list = []
     for one_detail in detaillist:
@@ -112,23 +108,25 @@ def get_item(item_id):
     list_with_data.append(detaillist_list)
     
     
-    #checktag: li with class: checktag -> content of li
+    # checktag: li with class: checktag -> content of li
     checktag = one_article.find_all("li", class_="checktag")
     checktag_list = []
     for one_checktag in checktag:
         checktag_list.append(string_return_value(one_checktag))
     list_with_data.append(checktag_list)
     
-    #text: p with id: viewad-description-text -> content of p
+    # text: p with id: viewad-description-text -> content of p
     text = one_article.find("p", id="viewad-description-text")
+    # TODO newlines are missing -> .text from bs removes them
     list_with_data.append(string_return_value(text))
 
-    #link
+    # link
     link_to_item = url
     list_with_data.append(link_to_item)
     
  
-    #return list in json format
+    # return list in json format
     return json.dumps(list_with_data)
 
-print(get_item("2152339446"))
+#testing line, set an actual id
+print(get_item("2224438399"))

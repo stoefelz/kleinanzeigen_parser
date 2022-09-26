@@ -9,57 +9,53 @@ def check_if_empty_return(string_list):
         return string_list[0].text.lstrip().replace('\u200b', '')
     else:
         return ""
-        
-            #TODO wenn 10stellige nummer -> dann sollte anzeige anngezeigt werden
-            #sollte wie ein onclick event auf liste sein
             
-    #TODO für fliter sollte sorting einfach in einen string umgewandelt werden, wo alle filter rein kommen, bsp: "/s/k0/reinland/kleidung"
-    #obwohl dann z.b. bei sorting zu beachten ist, dass "sortierung: blablabal" des is
+    # TODO für fliter sollte sorting einfach in einen string umgewandelt werden, wo alle filter rein kommen, bsp: "/s/k0/reinland/kleidung"
+    # obwohl dann z.b. bei sorting zu beachten ist, dass "sortierung: blablabal" des is
 def get_search_entries(search_term, sorting = "neu", site = 1):
-
-    
-    #TODO mehrere filter implementieren
+    # TODO more filter
     category = "/k0"
     
     url = "https://www.ebay-kleinanzeigen.de/s/sortierung:" + sorting + "/seite:" + str(site) + "/" + search_term + category
 	
-	#TODO
+	# TODO
     default_image_url = "https://www.stoefelz.com/frontend/media/profile.jpg"
 	
-	#without headers ebay-kleinanzeigen blocks request TODO uncomment
+	# without headers ebay-kleinanzeigen blocks request
     headers = { 'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:100.0) Gecko/20100101 Firefox/100.0' }
     html_site = requests.get(url, headers=headers)
-    soup = BeautifulSoup(html_site.text, "lxml")
+    soup = BeautifulSoup(html_site.text, "html.parser")
 
 	
-	#TODO only for testing
-    #with open("suche2.html") as fp:
+	# only for testing, code above must be commented
+    # with open("suche2.html") as fp:
      #  soup = BeautifulSoup(fp, "lxml",)
 	
     # list for return
     list_with_data = []
 	
-	# in every article tag is one complete search entry
+	# in every article tag is one complete search item
     articles = soup.find_all('article')
-    
+
     for one_article in articles:
         # for one search result
         article_list = []
-        
+
         # get id from attribute
         if one_article['data-adid'] is not None:
             article_list.append(one_article['data-adid'])
         else:
+            print("no id found")
             article_list.append("")
         
-        #get values from parsing correct class
+        # get values from parsing correct class
         heading = one_article.find_all("a", class_="ellipsis")
         article_list.append(check_if_empty_return(heading))
         
         text = one_article.find_all("p", class_="aditem-main--middle--description")
         article_list.append(check_if_empty_return(text))
         
-        price = one_article.find_all("p", class_="aditem-main--middle--price")
+        price = one_article.find_all("p", class_="aditem-main--middle--price-shipping--price")
         article_list.append(check_if_empty_return(price))
         
         zip_code = one_article.find_all("div", class_="aditem-main--top--left")
@@ -68,13 +64,13 @@ def get_search_entries(search_term, sorting = "neu", site = 1):
         create_date = one_article.find_all("div", class_="aditem-main--top--right")
         article_list.append(check_if_empty_return(create_date))
           
-        #get picture url from class, but must check if there is a picture or not
+        # get picture url from class, but must check if there is a picture or not
         picture = one_article.find_all("div", class_="imagebox")
         if len(picture) != 0:
   
             classes = picture[0]['class']
-            #classes returns string list of the class names
-            #searching for "is-nopic" then there is no image
+            # classes returns string list of the class names
+            # searching for "is-nopic" then there is no image
             checker = True
             
             for one_class_name in classes:
@@ -89,10 +85,11 @@ def get_search_entries(search_term, sorting = "neu", site = 1):
         else:
             article_list.append(default_image_url)
         
-        #append it to the list for return
+        # append it to the list for return
         list_with_data.append(article_list)
         
-    #return list in json format
+    # return list in json format
     return json.dumps(list_with_data)
 
-print(get_search_entries("bernd das bureck"))
+#search term for testing
+print(get_search_entries("smartphone"))
