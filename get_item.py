@@ -26,7 +26,7 @@ def get_item(item_id):
     #check for empty item_id
     if item_id.strip() == "":
     #TODO
-        return "JOJO"#json.dumps(list_with_data)
+        return json.dumps("")
     
     url = "https://www.ebay-kleinanzeigen.de/s-anzeige/" + item_id
 	
@@ -50,7 +50,7 @@ def get_item(item_id):
     #check if page exists
     if one_article is None:
     #TODO
-        return "HOHJO"#json.dumps(list_with_data)        
+        return json.dumps("")        
             
     #following outside article
     #userinfo
