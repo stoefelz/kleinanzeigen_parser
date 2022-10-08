@@ -31,9 +31,9 @@ there could be only one empty string in in every array index -> error/not availa
 
 if error: returns empty json array  
 
-## Function: *get_search_entries(search_term, sorting = "neu", site = 1)*
+## Function: *get_search_entries(search_term, sorting = "", site = 1, seller = "", typ="", min_price = 0, max_price = -1)*
 
-search_term: your keywords, sorting: *neu* or *preis* possible  
+search_term: your keywords, sorting: *neu* or *preis* possible, seller: *privat* or *gewerblich*, typ: *angebote* or *gesuche*, min_price and max_price: *0-100000*  
 if *site* max limit is reached -> last max site is returned // TODO  
 returns array with arrays of strings:  
 
