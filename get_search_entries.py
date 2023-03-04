@@ -10,7 +10,9 @@ def check_if_empty_return(string_list):
     if len(string_list) != 0:
         #\u200b fucks up the interpretation of the strings
         if len(string_list) > 1000:
-            error = True
+            if string_list.find("onGdprBannerLoad"):
+                error = True
+                return "Error in String"
         return string_list[0].text.lstrip().replace('\u200b', '')
     else:
         return ""
@@ -43,7 +45,7 @@ def get_search_entries(search_term, site = 1, sorting = "", seller = "", typ="",
         print(url)
 
             # TODO
-        default_image_url = "https://www.stoefelz.com/frontend/media/jdi_logo.png"
+        default_image_url = "https://www.stoefelz.com/no_image.svg"
 
             # without headers ebay-kleinanzeigen blocks request
         headers = { 'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:100.0) Gecko/20100101 Firefox/100.0' }
