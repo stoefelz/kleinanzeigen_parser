@@ -1,5 +1,6 @@
 import requests
 import json
+import re
 from bs4 import BeautifulSoup
 
 # returns the string, if not None
@@ -33,7 +34,8 @@ def get_item(item_id):
         headers = { 'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:100.0) Gecko/20100101 Firefox/100.0' }
         html_site = requests.get(url, headers=headers)
         # html.parser or lxml -> lxml needs pip3 module
-        soup = BeautifulSoup(html_site.text, "html.parser")   
+        html_parser = "html.parser"
+        soup = BeautifulSoup(html_site.text, html_parser)   
 	    
 	    # only for offline testing -> code above must be commented
         # with open("item.html") as fp:
@@ -51,7 +53,9 @@ def get_item(item_id):
         userinfo_list = []
         userinfo_list.append(string_return_value(userinfo.find("a")))
         # TODO remove new line
-        userinfo_list.append(string_return_value(userinfo.find("span", class_="text-body-regular")))
+        userinfo_remove_spaces = string_return_value(userinfo.find("span", class_="text-body-regular"))
+        userinfo_without_spaces = re.sub('  .*  ', "", userinfo_remove_spaces)
+        userinfo_list.append(userinfo_without_spaces)
         list_with_data.append(userinfo_list)
         
         # big_pictures: find_all div(class::galleryimage-large--cover) -> in every tag img with src list in div galleryimage-element
@@ -112,7 +116,10 @@ def get_item(item_id):
         
         # text: p with id: viewad-description-text -> content of p
         text = one_article.find("p", id="viewad-description-text")
-        # TODO newlines are missing -> .text from bs removes them
+        # convert br to \n
+        # text consists of not contiguous br tags
+        text = re.sub('<.?br.?>', "\n", str(text))
+        text = BeautifulSoup(text, html_parser)
         list_with_data.append(string_return_value(text))
 
         # link
@@ -124,6 +131,3 @@ def get_item(item_id):
     
     except:
         return json.dumps([])
-
-#testing line, set an actual id
-print(get_item("2224438399"))

@@ -43,7 +43,7 @@ def get_search_entries(search_term, site = 1, sorting = "", seller = "", typ="",
         print(url)
 
             # TODO
-        default_image_url = "https://www.stoefelz.com/frontend/media/profile.jpg"
+        default_image_url = "https://www.stoefelz.com/frontend/media/jdi_logo.png"
 
             # without headers ebay-kleinanzeigen blocks request
         headers = { 'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:100.0) Gecko/20100101 Firefox/100.0' }
