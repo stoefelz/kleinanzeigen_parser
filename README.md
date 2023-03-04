@@ -52,10 +52,3 @@ every item array has following order:
 there could be only one empty string in in every array index -> error/not available in html source code  
 
 if error: returns empty json array
-
-## TODO
-
-in zip_code sometimes wrong content  
-user info view -> remove line break  
-item view -> in description line breaks missing  
-picture gallery -> show that there are more pics  
