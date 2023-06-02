@@ -17,7 +17,7 @@ def string_return_value(string):
 # if there is some error -> empty string or array is in array
 # if there is no such item -> empty JSON array
 
-# item_id is Anzeigen-ID of Ebay-Kleinanzeigen item
+# item_id is Anzeigen-ID of Kleinanzeigen item
 
 def get_item(item_id):
     try:
@@ -28,9 +28,9 @@ def get_item(item_id):
         if str(item_id).strip() == "":
             return json.dumps("")
         
-        url = "https://www.ebay-kleinanzeigen.de/s-anzeige/" + str(item_id)
+        url = "https://www.kleinanzeigen.de/s-anzeige/" + str(item_id)
 	    
-        # without headers ebay-kleinanzeigen blocks request
+        # without headers kleinanzeigen blocks request
         headers = { 'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:100.0) Gecko/20100101 Firefox/100.0' }
         html_site = requests.get(url, headers=headers)
         # html.parser or lxml -> lxml needs pip3 module

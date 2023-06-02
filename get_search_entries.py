@@ -40,14 +40,13 @@ def get_search_entries(search_term, site = 1, sorting = "", seller = "", typ="",
         except:
             max_price = ""
 
-      # example for link: https://www.ebay-kleinanzeigen.de/s-sortierung:preis/anbieter:privat/anzeige:angebote/preis:1:10/k0
-        url = "https://www.ebay-kleinanzeigen.de/s/sortierung:" + sorting + "/anbieter:" + seller + "/anzeige:" + typ + "/preis:" + str(min_price) + ":" + str(max_price) + "/seite:" + str(site) + "/" + search_term + category
+      # example for link: https://www.kleinanzeigen.de/s-sortierung:preis/anbieter:privat/anzeige:angebote/preis:1:10/k0
+        url = "https://www.kleinanzeigen.de/s/sortierung:" + sorting + "/anbieter:" + seller + "/anzeige:" + typ + "/preis:" + str(min_price) + ":" + str(max_price) + "/seite:" + str(site) + "/" + search_term + category
         print(url)
 
-            # TODO
         default_image_url = "https://www.stoefelz.com/no_image.svg"
 
-            # without headers ebay-kleinanzeigen blocks request
+            # without headers kleinanzeigen blocks request
         headers = { 'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:100.0) Gecko/20100101 Firefox/100.0' }
         html_site = requests.get(url, headers=headers)
         soup = BeautifulSoup(html_site.text, "html.parser")
