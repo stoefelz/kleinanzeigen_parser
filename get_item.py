@@ -115,8 +115,8 @@ def get_item(item_id):
             'text': text,
             'details': detaillist_list,
             'checktags': checktag_list,
-            'small_pictures': small_pictures_list,
-            'large_pictures': large_pictures_list
+            'small-pictures': small_pictures_list,
+            'large-pictures': large_pictures_list
         }
         
         # return object in json format

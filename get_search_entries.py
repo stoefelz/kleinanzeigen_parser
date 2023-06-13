@@ -115,7 +115,7 @@ def get_search_entries(search_term, **search_arguments):
                 'description': info_text,
                 'price': price,
                 'date': date,
-                'image_url': image_url
+                'image-url': image_url
             }
             
             # append item to the returned list
