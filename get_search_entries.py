@@ -105,7 +105,7 @@ def get_search_entries(search_term, **search_arguments):
             # picture (can be empty)
             picture_div = one_article.find('div', class_='imagebox')
             try:
-                image_url = picture_div['data-imgsrc']
+                image_url = one_article.find('img')['src']
             except:
                 image_url = default_image_url
             
@@ -114,6 +114,7 @@ def get_search_entries(search_term, **search_arguments):
                 'heading': heading,
                 'description': info_text,
                 'price': price,
+                'zip-code': zip_code,
                 'date': date,
                 'image-url': image_url
             }
@@ -128,4 +129,4 @@ def get_search_entries(search_term, **search_arguments):
 
     except:
         return json.dumps([])
-
+print(get_search_entries("auto", min_price="100", max_price="1000", sorting="preis"))
