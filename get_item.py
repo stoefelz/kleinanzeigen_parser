@@ -37,10 +37,13 @@ def get_item(item_id):
         if one_article is None:
             raise Exception('Item does not exist')
             
-        #userinfo
+        #userinfo and username
         userinfo_with_space = soup.find('span', class_='iconlist-text').find('span', class_='text-body-regular')
         #removes line break in text
         userinfo = re.sub('  .*  ', '', string_return_value(userinfo_with_space))
+        
+        username = userinfo_with_space = soup.find('span', class_='iconlist-text').find('span', class_='text-body-regular-strong').a
+        username = string_return_value(username)
         
         
         # large_pictures: find_all div(class::galleryimage-large--cover) -> in every tag img with src list in div galleryimage-element
@@ -110,7 +113,8 @@ def get_item(item_id):
             'zip-code': zip_code,
             'date': date,
             'views': views,
-            'user-info': userinfo,
+            'username': username,
+            'userinfo': userinfo,
             'link': url,
             'text': text,
             'details': detaillist_list,
@@ -124,4 +128,4 @@ def get_item(item_id):
         
     except:
         return json.dumps({})
-        
+
