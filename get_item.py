@@ -40,7 +40,7 @@ def get_item(item_id):
         #userinfo and username
         userinfo_with_space = soup.find('span', class_='iconlist-text').find('span', class_='text-body-regular')
         #removes line break in text
-        userinfo = re.sub('  .*  ', '', string_return_value(userinfo_with_space))
+        userinfo = re.sub('  .*  ', '', string_return_value(userinfo_with_space)).replace('\n', ' ')
         
         username = userinfo_with_space = soup.find('span', class_='iconlist-text').find('span', class_='text-body-regular-strong').a
         username = string_return_value(username)

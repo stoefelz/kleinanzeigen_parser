@@ -1,5 +1,6 @@
 import requests
 import json
+import re
 from bs4 import BeautifulSoup
 
 # html.parser or lxml -> lxml needs pip3 lxml module
@@ -19,7 +20,6 @@ def string_return_value(string):
 # returns array of search items
 def get_search_entries(search_term, search_arguments):
     try:
-        # city = search_arguments.get('city') if search_arguments.get('city') != None else ""
         zip_code_id = search_arguments.get('zip_code_id') if search_arguments.get('zip_code_id') != None else ""
         zip_radius = search_arguments.get('zip_radius') if search_arguments.get('zip_radius') != None else ""
         site_number = search_arguments.get('site_number') if search_arguments.get('site_number') != None else ""
@@ -70,8 +70,9 @@ def get_search_entries(search_term, search_arguments):
             price = string_return_value(price)
 
             # zip code
-            zip_code = one_article.find('div', class_='aditem-main--top--left')
-            zip_code = string_return_value(zip_code)
+            zip_code_with_space = one_article.find('div', class_='aditem-main--top--left')
+            #removes line break in text
+            zip_code = re.sub('  .*  ', '', string_return_value(zip_code_with_space)).replace('\n', ' ')
 
             # date
             date = one_article.find('div', class_='aditem-main--top--right')
@@ -104,4 +105,4 @@ def get_search_entries(search_term, search_arguments):
 
     except:
         return json.dumps([])
-
+print(get_search_entries("smartphone", {"zip_code_id" :"3331", "zip_radius": "5", "site_number": "2", "sorting": "PRICE_AMOUNT", "typ": "OFFER", "min_price": "100"}))
