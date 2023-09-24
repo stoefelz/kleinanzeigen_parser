@@ -1,4 +1,4 @@
-# Kleinanzeigen Simple Parser
+# Kleinanzeigen Parser
 Simple Parser for kleinanzeigen.de 
 
 Website data get extracted with BeautifulSoup to an JSON array. Kleinanzeigen may block temporarly your ip because of too many requests in short time  
