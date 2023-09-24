@@ -14,40 +14,42 @@ there are two functions:
 
 item_id: id from ebay-kleinanzeigen object is needed  
 returns JSON Objects with following structure:  
-
+```
 {  
-&emsp;'heading': string,  
-&emsp;'price': string,  
-&emsp;'zip-code': string,  
-&emsp;'date': string,  
-&emsp;'views': string,  
-&emsp;'user-info': string,  
-&emsp;'link': string,  
-&emsp;'text': text,  
-&emsp;'details': {  
-&emsp;&emsp;key: string,  
-&emsp;&emsp;value: string  
-&emsp;}[],  
-&emsp;'checktags': string[],  
-&emsp;'small-pictures': string[],  
-&emsp;'large-pictures': string[]  
+	'heading': string, 
+	'price': string, 
+	'zip-code': string, 
+	'date': string, 
+	'views': string, 
+	'username': string,
+	'userinfo': string,
+	'link': string,
+	'text': text, 
+	'details': { 
+		key: string, 
+		value: string,
+	}[], 
+	'checktags': string[], 
+	'small-pictures': string[],
+	'large-pictures': string[,
 } 
-
+```
 *heading:* heading of item  
 *price:* price of item  
 *zip-code:* zip code with city  
 *date:* creation date  
 *views:* view counter may be empty  
-*user-info:* zip code as string  
+*username*: username from seller  
+*userinfo:* user type and creation date from user  
 *link:* link to item  
-*text:* info text to item  
+*text:* info text from item  
 *details:* detail objects in array, detail object consists of key and value  
 *checktags:* check tags in array  
 *small-pictures:* preview picture urls (low resolution) in array  
 *large-pictures:* main picture urls (high resolution) in array  
 
 some elements could be empty  
-if error: returns empty json object  
+if error occurs while fetching data: returns empty json object  
 
 **Example**
 > get_item(200045700)
@@ -60,7 +62,8 @@ returns
     "zip-code": "75053 Baden-W\u00fcrttemberg - Gondelsheim", 
     "date": "01.01.2023", 
     "views": "", 
-    "user-info": "Gewerblicher Nutzer\nAktiv seit 01.01.2023", 
+    "username": "Thomas",
+    "userinfo": "Gewerblicher Nutzer\nAktiv seit 01.01.2023", 
     "link": "https://www.url.de/IDNUMBER", 
     "text": "Gebrauchter BMW Gran Turismo", 
     "details": [
@@ -69,63 +72,71 @@ returns
         {"key": "Kilometerstand", "value": "153.000 km"}, 
     ], 
     "checktags": ["Anh\u00e4ngerkupplung", "Einparkhilfe", "Leichtmetallfelgen", "Xenon-/LED-Scheinwerfer"], 
-    "small_pictures": ["https://img.url.de/1_.JPG", "https://img.url.de/2_.JPG"],
-    "large_pictures": ["img.url.de/1.JPG", "img.url.de/1.JPG"]
+    "small-pictures": ["https://img.url.de/1_.JPG", "https://img.url.de/2_.JPG"],
+    "large-pictures": ["img.url.de/1.JPG", "img.url.de/1.JPG"]
 }
 ```
 
-## Function: _get_search_entries(search_term, **search_arguments)_
+## Function: _get_search_entries(search_term, search_arguments)_
 
 search_term: your keywords (mandatory)  
-**search_arguments: optional named parameter (order does not matter), they are not checked for plausibility; when parameters are not given, default values are used  
+search_arguments: Dictionary with optional, named parameter (order does not matter), they are not checked for plausibility; when parameters are not given, default values are used. When you want a default search, add an empty dictionary ('{}') as search_arguments
 
-&emsp;city = string  
-&emsp;zip_code = string  
->for filtering search results by city there is the city name AND the internal code for the zip code needed -> code for zip code begins with '_' but this function wants only the following numbers (you can find the codes and cities here: https://www.ebay-kleinanzeigen.de/s-ort-empfehlungen.json?query=berlin); default value is whole germany    
+### Possible search_argument parameter 
 
-&emsp;zip_radius = string  
->possible values: 'r5', 'r10', 'r20', 'r30', 'r50', 'r100', 'r150', 'r200'; default value is no radius
+zip_code_id  
+>every zip code has its own id (you can find the codes here: https://www.kleinanzeigen.de/s-ort-empfehlungen.json?query=berlin) -> this website returns the ids with a previous '\_'. This argument needs only the number without the '\_'; default value is whole germany    
 
-&emsp;site_number = string  
+zip_radius  
+>possible values: '5', '10', '20', '30', '50', '100', '150', '200'; default value is no radius
+
+site_number  
 >site number of results, if max limit is reached, the last page is returned again (TODO); default value is first page
 
-&emsp;sorting = string  
->possible values: 'preis', 'entfernung'; default value is newest item
+sorting  
+>possible values: 'SORTING_DATE', 'PRICE_AMOUNT'; default value is sorting with date
 
-&emsp;seller = string  
->possible values: 'privat', 'gewerblich'; default is both
+seller  
+>possible values: 'PRIVATE', 'COMMERCIAL'; default is both
 
-&emsp;typ = string  
->possible values: 'angebote', 'gewerblich'; default is both
+typ  
+>possible values: 'OFFER', 'WANTED'; default is both
 
-&emsp;min_price = string  
-&emsp;max_price = string  
+min_price  
+max_price  
 >price values should be positive numbers
+
+category  
+>every category has a specific number
 
 
 returns Array of JSON Objects with following structure:  
 
+```
 {  
-&emsp;'id': string,  
-&emsp;'heading': string,  
-&emsp;'description': string,  
-&emsp;'price': string,  
-&emsp;'date': string,  
-&emsp;'image-url': string,  
+	'id': string,  
+	'heading': string,  
+	'description': string,  
+	'price': string,  
+	'zip-code': string,  
+	'date': string,  
+	'image-url': string,  
 }  
+```
 
 *id:* id of item  
 *heading:* heading of item  
 *description:* description of item
 *price:* price of item  
+*zip-code*: zip code from location of item  
 *date:* creation date  
 *image-url:* url for preview image  
 
-some elements could be empty  
+some elements could be empty when error occurs while fetching object  
 if error: returns empty json object  
 
 **Example**
-> get_search_entries("smartphone", city = "Berlin", zip_code = "3331", site_number = "2", sorting = "preis", typ = "angebote", min_price = "100")
+> get_search_entries("smartphone", {"zip_code_id" :"3331", "site_number": "2", "sorting": "PRICE_AMOUNT", "typ": "OFFER", "min_price": "100"})
 
 returns
 ```
@@ -135,24 +146,27 @@ returns
     "heading": "Tausche Sony Xperia 1", 
     "description": "Tausche ein gebrauchtes Sony Xperia 1 gegen ein anderes Smartphone", 
     "price": "500 \u20ac VB", 
+    "zip-code": "13351 Wedding",
     "date": "Heute, 06:24", 
-    "image_url": "https://img.url.de/1_.JPG"
+    "image-url": "https://img.url.de/1_.JPG"
   }, 
   {
     "id": "4123", 
     "heading": "Apple iPhone 13 Smartphone 128gb mit Rechnung",
     "description": "Hiermit verkaufe ich meine neues Apple iPhone 13 Smartphone neu und unbenuzt mit Rechnung als...",
     "price": "800 \u20ac", 
+    "zip-code": "13351 Wedding",
     "date": "Gestern, 23:38", 
-    "image_url": "https://img.url.de/2_.JPG"
+    "image-url": "https://img.url.de/2_.JPG"
   }, 
   {
     "id": "3214", 
     "heading": "Verkaufe ein Apple iPhone 13 Smartphone",
     "description": "Verkaufe ein Apple iPhone 13 Smartphone (15,4 cm/6,1 Zoll, 128 GB Speicherplatz, 12 MP...", 
     "price": "650 \u20ac", 
+    "zip-code": "13351 Wedding",
     "date": "Gestern, 22:41", 
-    "image_url": "https://img.url.de/3_.JPG"
+    "image-url": "https://img.url.de/3_.JPG"
   }
 ]
 ```
