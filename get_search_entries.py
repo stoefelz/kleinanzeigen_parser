@@ -17,57 +17,32 @@ def string_return_value(string):
         return ''
 
 # returns array of search items
-def get_search_entries(search_term, **search_arguments):
+def get_search_entries(search_term, search_arguments):
     try:
-        city = search_arguments.get('city')
-        zip_code = search_arguments.get('zip_code')
-        zip_radius = search_arguments.get('zip_radius')
-        site_number = search_arguments.get('site_number')
-        sorting = search_arguments.get('sorting')
-        seller = search_arguments.get('seller')
-        typ = search_arguments.get('typ')
-        min_price = search_arguments.get('min_price')
-        max_price = search_arguments.get('max_price')
+        # city = search_arguments.get('city') if search_arguments.get('city') != None else ""
+        zip_code_id = search_arguments.get('zip_code_id') if search_arguments.get('zip_code_id') != None else ""
+        zip_radius = search_arguments.get('zip_radius') if search_arguments.get('zip_radius') != None else ""
+        site_number = search_arguments.get('site_number') if search_arguments.get('site_number') != None else ""
+        sorting = search_arguments.get('sorting') if search_arguments.get('sorting') != None else ""
+        seller = search_arguments.get('seller') if search_arguments.get('seller') != None else ""
+        typ = search_arguments.get('typ') if search_arguments.get('typ') != None else ""
+        min_price = search_arguments.get('min_price') if search_arguments.get('min_price') != None else ""
+        max_price = search_arguments.get('max_price') if search_arguments.get('max_price') != None else ""
+        category_id = search_arguments.get('category') if search_arguments.get('category') != None else ""
   
         # example url: 
-        # https://www.kleinanzeigen.de/s-/handy-telekom/sonstige/hessen/direktkaufen:aktiv/paketdienst:dhl/preis:10:800/oneplus/k0c173l4279r200+handy_telekom.art_s:sonstige+handy_telekom.condition_s:condition_new+handy_telekom.device_equipment_s:only_device
-        
+        # https://www.kleinanzeigen.de/s-suchanfrage.html?keywords=auto&categoryId=210&locationStr=Frankfurt+am+Main+-+Hessen&locationId=4292&radius=10&sortingField=PRICE_AMOUNT&adType=WANTED&posterType=COMMERCIAL&pageNum=1&action=find&maxPrice=20&minPrice=10&buyNowEnabled=false&shippingCarrier=
+      
         # url compositor
-        url = 'https://www.kleinanzeigen.de/s-'
-        # TODO categories
-        category = 'k0'
-
-        if zip_code and city:
-            url += '/'+ city
-        if sorting:
-            url += '/sortierung:' + sorting
-        if seller:
-            url += '/anbieter:' + seller
-        if typ:
-            url += '/anzeige:' + typ 
-        if min_price and max_price:
-            url += '/preis:' + min_price + ':' + max_price 
-        elif min_price:
-            url += '/preis:' + min_price + ':' 
-        elif max_price:
-             url += '/preis:' + ':' + max_price 
-        if site_number:
-            url += '/seite:' + site_number
-        url += '/' + search_term
-        if category:
-            url += '/' + category
-        if zip_code and city:
-            url += 'l' + zip_code
-            if zip_radius:
-                url += zip_radius
+        url = 'https://www.kleinanzeigen.de/s-suchanfrage.html?keywords='+search_term+'&categoryId='+category_id+'&locationStr=&locationId='+zip_code_id+'&radius='+zip_radius+'&sortingField='+sorting+'&adType='+typ+'&posterType='+seller+'&pageNum='+site_number+'&action=find&maxPrice='+max_price+'&minPrice='+min_price+'&buyNowEnabled=false&shippingCarrier=' 
 
         # without headers kleinanzeigen blocks request
-        headers = { 'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101 Firefox/102.0' }
+        headers = { 'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:115.0) Gecko/20100101 Firefox/115.0' }
         html_site = requests.get(url, headers=headers)
         soup = BeautifulSoup(html_site.text, html_parser)
 
         # only for testing, code above must be commented
-        # with open('../Downloads/fleisch.html') as fp:
+        # with open('../Downloads/test.html') as fp:
           # soup = BeautifulSoup(fp, html_parser)
 
         # list for return
@@ -129,4 +104,4 @@ def get_search_entries(search_term, **search_arguments):
 
     except:
         return json.dumps([])
-print(get_search_entries("auto", min_price="100", max_price="1000", sorting="preis"))
+
