@@ -6,9 +6,10 @@ Website data get extracted with BeautifulSoup to an JSON array. Kleinanzeigen ma
 needed Python3 libraries: requests, json, bs4  
 **Thanks to <a href="https://github.com/wention/BeautifulSoup4">BeautifulSoup</a> for making this project possible **
 
-there are two functions: 
+there are three functions: 
 - 	get_item: data for one specific item
 -	get_search_entries: search results from one page
+-   get_all_categories: get all search categories with their ids
 
 ## Function: *get_item(item_id)*
 
@@ -171,4 +172,52 @@ returns
 ]
 ```
 
+## Function: *get_all_categories()*
 
+
+returns JSON Objects with following structure:  
+
+```
+{  
+  'category_id': {
+	'name': string,
+	'number': string,
+	'subs': {
+	  'sub_name': string,
+	  'sub_number': string
+	}[]
+  }
+} 
+```
+
+_category_id_: category id as dictionary index  
+_name_: name of category  
+_number_: id of category  
+_subs_: all subcategories as list  
+_sub_name_: name of subcategory  
+_sub_number_: id of subcategory  
+
+this dictionary entry is repeated until all categories are captured
+
+**Example**
+
+```
+{
+  "210": {
+	"name": "Auto, Rad & Boot", 
+	"number": "210", 
+	"subs": [
+	  {"sub_name": "Autos", "sub_number": "216"}, 
+		{"sub_name": "Autoteile & Reifen", "sub_number": "223"}, 
+	  {"sub_name": "Boote & Bootszubehör", "sub_number": "211"}, 
+	  {"sub_name": "Fahrräder & Zubehör", "sub_number": "217"}, 
+	  {"sub_name": "Motorräder & Motorroller", "sub_number": "305"}, 
+	  {"sub_name": "Motorradteile & Zubehör", "sub_number": "306"}, 
+	  {"sub_name": "Nutzfahrzeuge & Anhänger", "sub_number": "276"}, 
+	  {"sub_name": "Reparaturen & Dienstleistungen", "sub_number": "280"}, 
+	  {"sub_name": "Wohnwagen & -mobile", "sub_number": "220"}, 
+	  {"sub_name": "Weiteres Auto, Rad & Boot", "sub_number": "241"}
+	]
+  }
+}
+```
