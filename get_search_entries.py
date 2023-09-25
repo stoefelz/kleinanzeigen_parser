@@ -34,7 +34,7 @@ def get_search_entries(search_term, search_arguments):
         # https://www.kleinanzeigen.de/s-suchanfrage.html?keywords=auto&categoryId=210&locationStr=Frankfurt+am+Main+-+Hessen&locationId=4292&radius=10&sortingField=PRICE_AMOUNT&adType=WANTED&posterType=COMMERCIAL&pageNum=1&action=find&maxPrice=20&minPrice=10&buyNowEnabled=false&shippingCarrier=
       
         # url compositor
-        url = 'https://www.kleinanzeigen.de/s-suchanfrage.html?keywords='+search_term+'&categoryId='+category_id+'&locationStr=&locationId='+zip_code_id+'&radius='+zip_radius+'&sortingField='+sorting+'&adType='+typ+'&posterType='+seller+'&pageNum='+site_number+'&action=find&maxPrice='+max_price+'&minPrice='+min_price+'&buyNowEnabled=false&shippingCarrier=' 
+        url = 'https://www.kleinanzeigen.de/s-suchanfrage.html?keywords='+search_term+'&categoryId='+category_id+'&locationStr=&locationId='+zip_code_id+'&radius='+zip_radius+'&sortingField='+sorting+'&adType='+typ+'&posterType='+seller+'&pageNum='+site_number+'&maxPrice='+max_price+'&minPrice='+min_price+'&buyNowEnabled=false&shippingCarrier=' 
 
         # without headers kleinanzeigen blocks request
         headers = { 'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:115.0) Gecko/20100101 Firefox/115.0' }
@@ -100,9 +100,9 @@ def get_search_entries(search_term, search_arguments):
             
         #for debugging
         print(url)
-        # return list in json format
-        return json.dumps(list_with_items)
+        # return list in json format, ensure_ascii=False for Umlaute
+        return json.dumps(list_with_items, ensure_ascii=False)
 
     except:
         return json.dumps([])
-print(get_search_entries("smartphone", {"zip_code_id" :"3331", "zip_radius": "5", "site_number": "2", "sorting": "PRICE_AMOUNT", "typ": "OFFER", "min_price": "100"}))
+

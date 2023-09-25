@@ -123,8 +123,8 @@ def get_item(item_id):
             'large-pictures': large_pictures_list
         }
         
-        # return object in json format
-        return json.dumps(item_object)
+        # return object in json format, ensure_ascii=False for Umlaute
+        return json.dumps(item_object, ensure_ascii=False)
         
     except:
         return json.dumps({})
