@@ -13,7 +13,7 @@ default_image_url = 'https://www.stoefelz.com/no_image.svg'
 # \u200b fucks up the interpretation of the strings
 def string_return_value(string):
     if string is not None:
-        return string.text.lstrip().replace('\u200b', '')
+        return string.text.strip().replace('\u200b', '')
     else:
         return ''
 
@@ -57,9 +57,12 @@ def get_search_entries(search_term, search_arguments):
             else:
                 continue
     
-            # heading
-            heading = one_article.find('a', class_='ellipsis')
-            heading = string_return_value(heading)
+            # new json info type
+            infos_json = one_article.find('script', {'type': 'application/ld+json'})
+            json_data = json.loads(infos_json.string.replace('\n', '  ').strip())
+
+            #heading
+            heading = json_data['title'].replace('\u200b', '')
             
             # info
             info_text = one_article.find('p', class_='aditem-main--middle--description')
