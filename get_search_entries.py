@@ -74,7 +74,7 @@ def get_search_entries(search_term, search_arguments):
             
             # price
             price = one_article.find('p', class_='aditem-main--middle--price-shipping--price')
-            price = string_return_value(price)
+            price = string_return_value(price.contents[0])
 
             # zip code
             zip_code_with_space = one_article.find('div', class_='aditem-main--top--left')
