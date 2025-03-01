@@ -59,10 +59,14 @@ def get_search_entries(search_term, search_arguments):
     
             # new json info type
             infos_json = one_article.find('script', {'type': 'application/ld+json'})
-            json_data = json.loads(infos_json.string.replace('\n', '  ').strip())
-
+            
             #heading
-            heading = json_data['title'].replace('\u200b', '')
+            if infos_json is not None:
+                json_data = json.loads(infos_json.string.replace('\n', '  ').strip())
+                heading = json_data['title'].replace('\u200b', '')
+            else:
+                heading = one_article.find('a', class_='ellipsis')
+                heading = string_return_value(heading)
             
             # info
             info_text = one_article.find('p', class_='aditem-main--middle--description')
