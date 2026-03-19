@@ -82,7 +82,7 @@ def get_search_entries(search_term, search_arguments):
             # zip code
             zip_code_with_space = one_article.find('div', class_='aditem-main--top--left')
             #removes line break in text
-            zip_code = re.sub('  .*  ', '', string_return_value(zip_code_with_space)).replace('\n', ' ')
+            zip_code = re.sub(r'\s{2,}', ' ', string_return_value(zip_code_with_space).replace('\n', ' '))
 
             # date
             date = one_article.find('div', class_='aditem-main--top--right')
