@@ -67,6 +67,9 @@ def get_search_entries(search_term, search_arguments):
             else:
                 heading = one_article.find('a', class_='ellipsis')
                 heading = string_return_value(heading)
+                    if heading == "":
+                        heading = one_article.find('span', class_='ellipsis')
+                        heading = string_return_value(heading)
             
             # info
             info_text = one_article.find('p', class_='aditem-main--middle--description')
