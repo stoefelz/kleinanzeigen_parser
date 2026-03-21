@@ -27,8 +27,8 @@ def get_item(item_id):
         soup = BeautifulSoup(html_site.text, html_parser)
         
         # only for offline testing, remove following comments
-        # with open('test.html') as fp:
-        #    soup = BeautifulSoup(fp, html_parser)
+        #with open('test.html') as fp:
+           #soup = BeautifulSoup(fp, html_parser)
         
         # in every article tag is one complete search entry
         one_article = soup.find('article')
@@ -36,16 +36,28 @@ def get_item(item_id):
         # check if page exists
         if one_article is None:
             raise Exception('Item does not exist')
-            
+
         #userinfo and username
-        userinfo_with_space = soup.find('span', class_='iconlist-text').find('span', class_='text-body-regular')
-        #removes line break in text
-        userinfo = re.sub('  .*  ', '', string_return_value(userinfo_with_space)).replace('\n', '. ')
-        
-        username = userinfo_with_space = soup.find('span', class_='iconlist-text').find('span', class_='text-body-regular-strong').a
-        username = string_return_value(username)
-        
-        
+        usercontainer = soup.find('div', id='viewad-contact')
+        if usercontainer:
+            userinfo = usercontainer.find('span', class_='text-body-regular')
+            if userinfo:
+                #removes line break in text
+                userinfo = re.sub('  .*  ', '', string_return_value(userinfo)).replace('\n', '. ')
+            else:
+                userinfo = ""
+            username = usercontainer.find('span', class_='text-body-regular-strong')
+            if username:
+                if username.find('a'):
+                    username = string_return_value(username.a)
+                else:
+                    username = string_return_value(username)
+            else:
+                username = ""
+        else:
+            userinfo = ""
+            username = ""
+
         # large_pictures: find_all div(class::galleryimage-large--cover) -> in every tag img with src list in div galleryimage-element
         large_pictures_list = []
         large_pictures = one_article.find_all('img', id='viewad-image')
@@ -128,4 +140,3 @@ def get_item(item_id):
         
     except:
         return json.dumps({})
-
