@@ -22,13 +22,13 @@ def get_item(item_id):
         url = basic_url + 's-anzeige/' + str(item_id)
         # without headers request is bocked
         headers = { 'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101 Firefox/102.0' }
-        #html_site = requests.get(url, headers=headers)
+        html_site = requests.get(url, headers=headers)
         # comment follwing line for offline testing
-        #soup = BeautifulSoup(html_site.text, html_parser)
+        soup = BeautifulSoup(html_site.text, html_parser)
         
         # only for offline testing, remove following comments
-        with open('test.html') as fp:
-           soup = BeautifulSoup(fp, html_parser)
+        #with open('test.html') as fp:
+           #soup = BeautifulSoup(fp, html_parser)
         
         # in every article tag is one complete search entry
         one_article = soup.find('article')
@@ -135,13 +135,13 @@ def get_item(item_id):
         # text is now string and msut be converted to html again
         text = BeautifulSoup(text, html_parser)
         text = string_return_value(text)
-
+       
         buynow = False
         buynowfee = ""
-        buynowcontainer = soup.find('script', string=re.compile("isBuyNowEnabled")).string
+        buynowcontainer = soup.find('script', string=re.compile("isBuyNowEnabled"))
         if buynowcontainer:
-            buynowfee = re.search(r'buyerFeeInEuroCent:\s*(\d+)', buynowcontainer).group(1)
-            buynowstatus = re.search(r'isBuyNowEnabled:\s*(true|false)', buynowcontainer).group(1)
+            buynowfee = re.search(r'buyerFeeInEuroCent:\s*(\d+)', buynowcontainer.string).group(1)
+            buynowstatus = re.search(r'isBuyNowEnabled:\s*(true|false)', buynowcontainer.string).group(1)
             if buynowstatus == "true":
                 buynow = True
     
@@ -170,4 +170,3 @@ def get_item(item_id):
         
     except:
         return json.dumps({})
-print(get_item(1))
