@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 
 basic_url = 'https://www.kleinanzeigen.de/'
 #html.parser or lxml -> lxml needs pip3 lxml module
-html_parser = 'html.parser'
+html_parser = 'lxml'
 
 # returns the string, if not None
 # lstrip -> removes spaces and \n on left side of string

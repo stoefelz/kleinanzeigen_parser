@@ -4,7 +4,7 @@ import re
 from bs4 import BeautifulSoup
 
 # html.parser or lxml -> lxml needs pip3 lxml module
-html_parser = 'html.parser'
+html_parser = 'lxml'
 # default image when no image is available
 default_image_url = 'https://www.stoefelz.com/no_image.svg'
 
@@ -42,8 +42,8 @@ def get_search_entries(search_term, search_arguments):
         soup = BeautifulSoup(html_site.text, html_parser)
 
         # only for testing, code above must be commented
-        # with open('../Downloads/test.html') as fp:
-          # soup = BeautifulSoup(fp, html_parser)
+        #with open('test.html') as fp:
+            #soup = BeautifulSoup(fp, html_parser)
 
         # list for return
         list_with_items = []
