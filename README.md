@@ -18,12 +18,14 @@ returns JSON Objects with following structure:
 ```
 {  
 	'heading': string, 
+    'status': string,
 	'price': string, 
 	'zip-code': string, 
 	'date': string, 
 	'views': string, 
 	'username': string,
 	'userinfo': string,
+    'userbadges': string,
 	'link': string,
 	'text': text, 
 	'details': { 
@@ -32,22 +34,28 @@ returns JSON Objects with following structure:
 	}[], 
 	'checktags': string[], 
 	'small-pictures': string[],
-	'large-pictures': string[,
+	'large-pictures': string[],
+    'buynow': bool,
+    'buynowfee': string,
 } 
 ```
 *heading:* heading of item  
+*status:* status of item: active/deleted/paused__
 *price:* price of item  
 *zip-code:* zip code with city  
 *date:* creation date  
 *views:* view counter may be empty  
 *username*: username from seller  
 *userinfo:* user type and creation date from user  
+*userbadges:* badges of user__
 *link:* link to item  
 *text:* info text from item  
 *details:* detail objects in array, detail object consists of key and value  
 *checktags:* check tags in array  
 *small-pictures:* preview picture urls (low resolution) in array  
 *large-pictures:* main picture urls (high resolution) in array  
+*buynow:* if buynow enabled__
+*buynowfee:* if buynowfee available in eurocent or empty__
 
 some elements could be empty  
 if error occurs while fetching data: returns empty json object  
@@ -59,12 +67,14 @@ returns
 ```
 {  
     "heading": "BMW Gran Turismo", 
+    "status": "active",
     "price": "18.800 \u20ac", 
     "zip-code": "75053 Baden-W\u00fcrttemberg - Gondelsheim", 
     "date": "01.01.2023", 
     "views": "", 
     "username": "Thomas",
     "userinfo": "Gewerblicher Nutzer\nAktiv seit 01.01.2023", 
+    "userbadges": "",
     "link": "https://www.url.de/IDNUMBER", 
     "text": "Gebrauchter BMW Gran Turismo", 
     "details": [
@@ -74,7 +84,9 @@ returns
     ], 
     "checktags": ["Anh\u00e4ngerkupplung", "Einparkhilfe", "Leichtmetallfelgen", "Xenon-/LED-Scheinwerfer"], 
     "small-pictures": ["https://img.url.de/1_.JPG", "https://img.url.de/2_.JPG"],
-    "large-pictures": ["img.url.de/1.JPG", "img.url.de/1.JPG"]
+    "large-pictures": ["img.url.de/1.JPG", "img.url.de/1.JPG"],
+    "buynow": false,
+    "buynowfee": "",
 }
 ```
 

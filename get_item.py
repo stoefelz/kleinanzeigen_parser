@@ -22,13 +22,13 @@ def get_item(item_id):
         url = basic_url + 's-anzeige/' + str(item_id)
         # without headers request is bocked
         headers = { 'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101 Firefox/102.0' }
-        html_site = requests.get(url, headers=headers)
+        #html_site = requests.get(url, headers=headers)
         # comment follwing line for offline testing
-        soup = BeautifulSoup(html_site.text, html_parser)
+        #soup = BeautifulSoup(html_site.text, html_parser)
         
         # only for offline testing, remove following comments
-        #with open('test.html') as fp:
-           #soup = BeautifulSoup(fp, html_parser)
+        with open('test.html') as fp:
+           soup = BeautifulSoup(fp, html_parser)
         
         # in every article tag is one complete search entry
         one_article = soup.find('article')
@@ -37,15 +37,27 @@ def get_item(item_id):
         if one_article is None:
             raise Exception('Item does not exist')
 
+        status = "active"
+        statustag = soup.find('script', string=re.compile("showPausedVeil")).string
+        if statustag:
+            deleted = re.search(r'showDeletedVeil:\s*(true|false)', statustag).group(1)
+            paused = re.search(r'showPausedVeil:\s*(true|false)', statustag).group(1)
+            
+            if deleted == "true":
+                status = "deleted"
+            elif paused == "true":
+                status = "paused"
+
         #userinfo and username
         usercontainer = soup.find('div', id='viewad-contact')
         if usercontainer:
-            userinfo = usercontainer.find('span', class_='text-body-regular')
-            if userinfo:
-                #removes line break in text
-                userinfo = re.sub('  .*  ', '', string_return_value(userinfo)).replace('\n', '. ')
-            else:
-                userinfo = ""
+            usercontainerdiv = usercontainer.find_all('span', class_='userprofile-vip-details-text')
+            userinfo = ""
+            for info in usercontainerdiv:
+                if userinfo != "":
+                    userinfo += ", "
+                userinfo += string_return_value(info).replace('\n', '')
+
             username = usercontainer.find('span', class_='text-body-regular-strong')
             if username:
                 if username.find('a'):
@@ -54,6 +66,11 @@ def get_item(item_id):
                     username = string_return_value(username)
             else:
                 username = ""
+            userbadges = usercontainer.find('div', class_='profile-userbadges')
+            if userbadges:
+                userbadges = re.sub(r'\s{2,}', ', ', string_return_value(userbadges).replace('\n', ''))
+            else:
+                userbadges = ""
         else:
             userinfo = ""
             username = ""
@@ -118,21 +135,34 @@ def get_item(item_id):
         # text is now string and msut be converted to html again
         text = BeautifulSoup(text, html_parser)
         text = string_return_value(text)
-     
+
+        buynow = False
+        buynowfee = ""
+        buynowcontainer = soup.find('script', string=re.compile("isBuyNowEnabled")).string
+        if buynowcontainer:
+            buynowfee = re.search(r'buyerFeeInEuroCent:\s*(\d+)', buynowcontainer).group(1)
+            buynowstatus = re.search(r'isBuyNowEnabled:\s*(true|false)', buynowcontainer).group(1)
+            if buynowstatus == "true":
+                buynow = True
+    
         item_object = {
             'heading': heading,
+            'status': status,
             'price': price,
             'zip-code': zip_code,
             'date': date,
             'views': views,
             'username': username,
             'userinfo': userinfo,
+            'userbadges': userbadges,
             'link': url,
             'text': text,
             'details': detaillist_list,
             'checktags': checktag_list,
             'small-pictures': small_pictures_list,
-            'large-pictures': large_pictures_list
+            'large-pictures': large_pictures_list,
+            'buynow': buynow,
+            'buynowfee': buynowfee,
         }
         
         # return object in json format, ensure_ascii=False for Umlaute
@@ -140,3 +170,4 @@ def get_item(item_id):
         
     except:
         return json.dumps({})
+print(get_item(1))
