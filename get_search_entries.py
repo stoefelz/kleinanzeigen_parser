@@ -29,12 +29,13 @@ def get_search_entries(search_term, search_arguments):
         min_price = search_arguments.get('min_price') if search_arguments.get('min_price') != None else ""
         max_price = search_arguments.get('max_price') if search_arguments.get('max_price') != None else ""
         category_id = search_arguments.get('category') if search_arguments.get('category') != None else ""
+        buynow = search_arguments.get('buynow') if search_arguments.get('buynow') != None else ""
   
         # example url: 
         # https://www.kleinanzeigen.de/s-suchanfrage.html?keywords=auto&categoryId=210&locationStr=Frankfurt+am+Main+-+Hessen&locationId=4292&radius=10&sortingField=PRICE_AMOUNT&adType=WANTED&posterType=COMMERCIAL&pageNum=1&action=find&maxPrice=20&minPrice=10&buyNowEnabled=false&shippingCarrier=
       
         # url compositor
-        url = 'https://www.kleinanzeigen.de/s-suchanfrage.html?keywords='+search_term+'&categoryId='+category_id+'&locationStr=&locationId='+zip_code_id+'&radius='+zip_radius+'&sortingField='+sorting+'&adType='+typ+'&posterType='+seller+'&pageNum='+site_number+'&maxPrice='+max_price+'&minPrice='+min_price+'&buyNowEnabled=false&shippingCarrier=' 
+        url = 'https://www.kleinanzeigen.de/s-suchanfrage.html?keywords='+search_term+'&categoryId='+category_id+'&locationStr=&locationId='+zip_code_id+'&radius='+zip_radius+'&sortingField='+sorting+'&adType='+typ+'&posterType='+seller+'&pageNum='+site_number+'&maxPrice='+max_price+'&minPrice='+min_price+'&buyNowEnabled='+buynow+'&shippingCarrier=' 
 
         # without headers kleinanzeigen blocks request
         headers = { 'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:115.0) Gecko/20100101 Firefox/115.0' }
@@ -119,3 +120,4 @@ def get_search_entries(search_term, search_arguments):
     except:
         return json.dumps([])
 
+print(get_search_entries("oneplus", {"buynow": "false"}))
