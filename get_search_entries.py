@@ -119,5 +119,3 @@ def get_search_entries(search_term, search_arguments):
 
     except:
         return json.dumps([])
-
-print(get_search_entries("oneplus", {"buynow": "false"}))
