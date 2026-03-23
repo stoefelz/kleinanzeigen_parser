@@ -122,6 +122,9 @@ max_price
 category  
 >every category has a specific number
 
+buynow
+>possible values: 'true' or 'false'
+
 
 returns Array of JSON Objects with following structure:  
 
@@ -149,7 +152,7 @@ some elements could be empty when error occurs while fetching object
 if error: returns empty json object  
 
 **Example**
-> get_search_entries("smartphone", {"zip_code_id" :"3331", "site_number": "2", "sorting": "PRICE_AMOUNT", "typ": "OFFER", "min_price": "100"})
+> get_search_entries("smartphone", {"zip_code_id" :"3331", "site_number": "2", "sorting": "PRICE_AMOUNT", "typ": "OFFER", "min_price": "100", "buynow": "false"})
 
 returns
 ```
