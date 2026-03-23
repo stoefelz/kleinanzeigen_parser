@@ -37,6 +37,7 @@ returns JSON Objects with following structure:
 	'large-pictures': string[],
     'buynow': bool,
     'buynowfee': string,
+    'shipping': string,
 } 
 ```
 *heading:* heading of item  
@@ -56,6 +57,7 @@ returns JSON Objects with following structure:
 *large-pictures:* main picture urls (high resolution) in array  
 *buynow:* if buynow enabled__
 *buynowfee:* if buynowfee available in eurocent or empty__
+*shipping:* if shipping available or only pickup
 
 some elements could be empty  
 if error occurs while fetching data: returns empty json object  
@@ -87,6 +89,7 @@ returns
     "large-pictures": ["img.url.de/1.JPG", "img.url.de/1.JPG"],
     "buynow": false,
     "buynowfee": "",
+    "shipping": "Nur Abholung",
 }
 ```
 
@@ -123,7 +126,10 @@ category
 >every category has a specific number
 
 buynow
->possible values: 'true' or 'false'
+>possible values: 'true' or 'false'; default 'false'
+
+shipping
+>true for shipping available false for only pickup; default both
 
 
 returns Array of JSON Objects with following structure:  

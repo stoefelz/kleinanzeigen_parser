@@ -144,6 +144,10 @@ def get_item(item_id):
             buynowstatus = re.search(r'isBuyNowEnabled:\s*(true|false)', buynowcontainer.string).group(1)
             if buynowstatus == "true":
                 buynow = True
+
+        shipping = one_article.find('span', class_='boxedarticle--details--shipping')
+        shipping = string_return_value(shipping)
+        
     
         item_object = {
             'heading': heading,
@@ -163,6 +167,7 @@ def get_item(item_id):
             'large-pictures': large_pictures_list,
             'buynow': buynow,
             'buynowfee': buynowfee,
+            'shipping': shipping,
         }
         
         # return object in json format, ensure_ascii=False for Umlaute
