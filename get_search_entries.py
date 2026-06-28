@@ -13,7 +13,9 @@ BASE_URL = 'https://www.kleinanzeigen.de'
 HEADERS = {
     'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:152.0) Gecko/20100101 Firefox/152.0'
 }
-
+IMAGE_PATTERN = r"(?<=\$_)\d+(?=\.AUTO)"
+SESSION = requests.Session()
+SESSION.headers.update(HEADERS)
 
 #for new Site by Chatgpt -------------------------------#
 
@@ -112,11 +114,10 @@ def new_site(items, result_ads):
 # returns the string, if not None
 # lstrip -> removes spaces and \n on left side of string
 # \u200b fucks up the interpretation of the strings
-def clean_text(text: str) -> str:
+def clean_text(text):
     if text is not None:
         return text.get_text(separator=' ', strip=True).replace('\u200b', '')
-    else:
-        return ''
+    return ''
 
 def old_site(items, all_articles):
     for article in all_articles:
@@ -130,13 +131,14 @@ def old_site(items, all_articles):
         infos_json = article.find('script', {'type': 'application/ld+json'})
         
         heading = ''
+        info_text = ''
         #heading and image url
         if infos_json and infos_json.string:
             try:
                 json_data = json.loads(infos_json.string)
-                heading = json_data.get('title').replace('\u200b', '')
-                info_text = json_data.get('description').replace('\u200b', '')
-                image_url = json_data.get('contentUrl') or DEFAULT_IMAGE_URL
+                heading = json_data.get('title', '').replace('\u200b', '')
+                info_text = json_data.get('description', '').replace('\u200b', '')
+                image_url = json_data.get('contentUrl', '') or DEFAULT_IMAGE_URL
             except json.JSONDecodeError:
                 pass
         if not heading:
@@ -144,9 +146,7 @@ def old_site(items, all_articles):
                 clean_text(article.find('a', class_='ellipsis'))
                 or clean_text(article.find('h3'))
                 )
-        pattern = r"(?<=\$_)\d+(?=\.AUTO)"
-        image_url = re.sub(pattern, "2", image_url)
-
+  
         # info
         #info_text = article.find('p', class_='aditem-main--middle--description')
         #info_text = clean_text(info_text)
@@ -159,7 +159,6 @@ def old_site(items, all_articles):
             price = clean_text(price_tag)
 
         if not price:
-            print("NEWOLD Site\n")
             price_tag = article.find("p", class_="my-xsmall text-title3 font-strong text-secondary")
             price = clean_text(price_tag)
 
@@ -170,16 +169,14 @@ def old_site(items, all_articles):
         
         if not zip_code:
             spans = article.find("div", class_="flex items-center gap-xxsmall text-onSurfaceNonessential")
-
-            spans = spans.find_all("span")
-            location = ""
-            for span in spans:
-                location = location + " " + clean_text(span)
-            zip_code = location
+            if spans:
+                spans = spans.find_all("span")
+                location = ""
+                for span in spans:
+                    location = location + " " + clean_text(span)
+                zip_code = location
 
         # image
-        image_url = article.find('img')['src']
-
         if image_url == DEFAULT_IMAGE_URL:
             img = article.find("img")
 
@@ -189,6 +186,8 @@ def old_site(items, all_articles):
                     or img.get("data-src")
                     or DEFAULT_IMAGE_URL
                 )
+        # set small image size 2
+        image_url = re.sub(IMAGE_PATTERN, "2", image_url)
 
         # date
         date = article.find('div', class_='aditem-main--top--right')
@@ -226,15 +225,20 @@ def get_search_entries(search_term: str, search_arguments: dict) -> str:
         f"&shipping={argument('shipping')}"
         f"&shippingCarrier="
     )
-
-    #response = requests.get(url, headers=HEADERS) 
+    
+    try:
+        response = SESSION.get(url)
+    except requests.RequestException as e:
+        print("Connection error %s", e)
+        return json.dumps([])
+    
     # utf-8 important for showing right characters
-    #response.encoding = "utf-8"
-    #html_text = response.text
+    response.encoding = "utf-8"
+    html_text = response.text
 
     # only for testing, code above must be commented
-    with open("seite.html", encoding="utf-8") as fp:
-        html_text = fp.read()
+    #with open("seite.html", encoding="utf-8") as fp:
+    #    html_text = fp.read()
 
     soup = BeautifulSoup(html_text, HTML_PARSER)
 
@@ -244,16 +248,14 @@ def get_search_entries(search_term: str, search_arguments: dict) -> str:
     #check for new or old website
     result_ads = find_result_ads(soup)
     if(result_ads):
-        print("NEW Site\n")
+
         new_site(items, result_ads)
     else:
-        print("OLD Site\n")
         all_articles = soup.find_all('article')
         old_site(items, all_articles)
         
     #for debugging
-    print(url)
+    #print(url)
     # return list in json format, ensure_ascii=False for Umlaute
     return json.dumps(items, ensure_ascii=False, indent=4)
 
-print(get_search_entries("Oneplus", {'zip_code_id': '5510', "min_price": "999"}))
