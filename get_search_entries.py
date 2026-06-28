@@ -135,35 +135,65 @@ def old_site(items, all_articles):
             try:
                 json_data = json.loads(infos_json.string)
                 heading = json_data.get('title').replace('\u200b', '')
+                info_text = json_data.get('description').replace('\u200b', '')
                 image_url = json_data.get('contentUrl') or DEFAULT_IMAGE_URL
             except json.JSONDecodeError:
                 pass
         if not heading:
             heading= (
                 clean_text(article.find('a', class_='ellipsis'))
-                or clean_text(article.find('span', class_='ellipsis'))
+                or clean_text(article.find('h3'))
                 )
-       
+        pattern = r"(?<=\$_)\d+(?=\.AUTO)"
+        image_url = re.sub(pattern, "2", image_url)
+
         # info
-        info_text = article.find('p', class_='aditem-main--middle--description')
-        info_text = clean_text(info_text)
+        #info_text = article.find('p', class_='aditem-main--middle--description')
+        #info_text = clean_text(info_text)
         
         # price
-        price = article.find('p', class_='aditem-main--middle--price-shipping--price')
-        if hasattr(price, 'contents') and len(price.contents) >= 1:
-            price = clean_text(price.contents[0])
+        price_tag = article.find('p', class_='aditem-main--middle--price-shipping--price')
+        if hasattr(price_tag, 'contents') and len(price_tag.contents) >= 1:
+            price = clean_text(price_tag.contents[0])
         else:
-            price = clean_text(price)
+            price = clean_text(price_tag)
+
+        if not price:
+            print("NEWOLD Site\n")
+            price_tag = article.find("p", class_="my-xsmall text-title3 font-strong text-secondary")
+            price = clean_text(price_tag)
 
         # zip code
         zip_code_with_space = article.find('div', class_='aditem-main--top--left')
         #removes line break in text
         zip_code = re.sub(r'\s{2,}', ' ', clean_text(zip_code_with_space).replace('\n', ' '))
         
+        if not zip_code:
+            spans = article.find("div", class_="flex items-center gap-xxsmall text-onSurfaceNonessential")
+
+            spans = spans.find_all("span")
+            location = ""
+            for span in spans:
+                location = location + " " + clean_text(span)
+            zip_code = location
+
+        # image
+        image_url = article.find('img')['src']
+
+        if image_url == DEFAULT_IMAGE_URL:
+            img = article.find("img")
+
+            if img:
+                image_url = (
+                    img.get("src")
+                    or img.get("data-src")
+                    or DEFAULT_IMAGE_URL
+                )
+
         # date
         date = article.find('div', class_='aditem-main--top--right')
         date = clean_text(date)
-        
+     
         items.append({
             'id': item_id,
             'heading': heading,
@@ -197,14 +227,14 @@ def get_search_entries(search_term: str, search_arguments: dict) -> str:
         f"&shippingCarrier="
     )
 
-    response = requests.get(url, headers=HEADERS) 
+    #response = requests.get(url, headers=HEADERS) 
     # utf-8 important for showing right characters
-    response.encoding = "utf-8"
-    html_text = response.text
+    #response.encoding = "utf-8"
+    #html_text = response.text
 
     # only for testing, code above must be commented
-    #with open("quellcode.html", encoding="utf-8") as fp:
-    #    html_text = fp.read()
+    with open("seite.html", encoding="utf-8") as fp:
+        html_text = fp.read()
 
     soup = BeautifulSoup(html_text, HTML_PARSER)
 
@@ -222,7 +252,8 @@ def get_search_entries(search_term: str, search_arguments: dict) -> str:
         old_site(items, all_articles)
         
     #for debugging
-    #print(url)
+    print(url)
     # return list in json format, ensure_ascii=False for Umlaute
-    return json.dumps(items, ensure_ascii=False)
+    return json.dumps(items, ensure_ascii=False, indent=4)
 
+print(get_search_entries("Oneplus", {'zip_code_id': '5510', "min_price": "999"}))
